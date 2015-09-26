@@ -1,0 +1,216 @@
+<!doctype html>
+<html>
+<head>
+  <title> GW2 Dungeon tokens to gold </title>
+
+  <style>
+    .moneyBox {
+      min-width: fit-content;
+      white-space: nowrap;
+      text-align: right;
+    }
+
+    .icon-medium {
+      width: 32px;
+      height: 32px;
+    }
+
+    .icon-compact {
+      width: 16px;
+      height: 16px;
+    }
+
+    th {
+      white-space: nowrap;
+    }
+
+    .table>tfoot>tr>td {
+      vertical-align: bottom !important;
+      border-top: 2px solid #ddd !important;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="row">
+      <div class="col-xs-12" id="errors">
+        <h1> GW2 Dungeon tokens to money </h1>
+        <p>
+          Use this tool to determine the best value of your dungeon tokens!
+          This tool evaluates salvage results, trading post listings and vendor
+          values, and creates a table of values for all dungeon items. You can
+          press the table headings to sort, as well as press the items to show
+          more information on how the value of that item was calculated.
+        </p>
+      </div>
+      <div class="col-xs-12" id="item_table">
+        <ul class="nav nav-tabs" role="tablist" id="dungeon_tabs">
+        </ul>
+
+        <div class="tab-content" id="dungeon_panels">
+        </div>
+
+      </div>
+    </div>
+  </div>
+  <!-- javascript things -->
+  <script type="text/javascript" src="bundle.js"></script>
+
+  <!-- Bootstrap, yes really, but only for the nice theme it has -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+
+  <script id="dungeon_tab_row" type="text/x-handlebars-template">
+    <li role="presentation">
+      <a href="#{{ dungeon_symbolic_name }}" aria-controls="{{ dungeon_symbolic_name }}" role="tab" data-toggle="tab">
+        {{ dungeon_name }}
+      </a>
+    </li>
+  </script>
+
+  <script id="dungeon_item_table" type="text/x-handlebars-template">
+  <div role="tabpanel" class="tab-pane" id="{{ dungeon_symbolic_name }}">
+    <table class="table" id="{{ dungeon_symbolic_name }}_table">
+      <thead>
+        <tr>
+          <th>Icon</th>
+          <th width="100%">Name</th>
+          <th>Cost in tokens</th>
+          <th>Total value</th>
+          <th>Value per token</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{#each items}}
+          <tr data-item-id={{id}}>
+            <td><img src="{{icon}}"/></td>
+            <td width="100%">{{full_name}}</td>
+            <td data-order={{token_cost}}>{{formatToken token_cost ../token_icon}}</td>
+            <td data-order={{values.strategy_profit}}>{{formatGold values.strategy_profit ../icons}}</td>
+            <td data-order={{values.strategy_profit_per_token}}>{{formatGold values.strategy_profit_per_token ../icons}}</td>
+          </tr>
+        {{/each}}
+      </tbody>
+    </table>
+  </div>
+  </script>
+
+  <script id="item_detail_row" type="text/x-handlebars-template">
+    <div>
+      <!-- Nav tabs -->
+      <ul class="nav nav-tabs" role="tablist">
+        {{# if item.values.sell }}
+          <li role="presentation">
+            <a href="#{{item.id}}_vendor_sell" aria-controls="{{item.id}}_vendor_sell" role="tab" data-toggle="tab">
+              Vendor
+            </a>
+          </li>
+        {{/if}}
+
+        {{# if item.values.tp_sells }}
+          <li role="presentation">
+            <a href="#{{item.id}}_tp_sell" aria-controls="{{item.id}}_tp_sell" role="tab" data-toggle="tab">
+              Trading Post
+            </a>
+          </li>
+        {{/if}}
+
+        {{# if item.values.salvage_sells }}
+          <li role="presentation">
+            <a href="#{{item.id}}_salvage_sell" aria-controls="{{item.id}}_salvage_sell" role="tab" data-toggle="tab">
+              Salvage (Black Lion Salvage Kit)
+            </a>
+          </li>
+        {{/if}}
+      </ul>
+
+      <div class="tab-content">
+        {{# if item.values.sell }}
+          <div role="tabpanel" class="tab-pane" id="{{item.id}}_vendor_sell">
+            <p>
+              <dl class="dl-horizontal" style="width: 200px">
+                <dt> Vendor value </dt>
+                <dd> {{ formatGold item.values.sell icons}} </dd>
+              </dl>
+            </p>
+          </div>
+        {{/if}}
+
+        {{# if item.values.tp_sells }}
+          <div role="tabpanel" class="tab-pane" id="{{item.id}}_tp_sell">
+            <p>
+
+              <dl class="dl-horizontal" style="width: 200px">
+                <dt> TP list </dt>
+                <dd> {{ formatGold item.values.tp_buys_pre_tax icons}} </dd>
+
+
+                <dt> TP sell </dt>
+                <dd> {{ formatGold item.values.tp_sells_pre_tax icons}} </dd>
+              </dl>
+
+              <dl class="dl-horizontal" style="width: 200px">
+                <dt> TP list (after fee) </dt>
+                <dd> {{ formatGold item.values.tp_buys icons}} </dd>
+
+
+                <dt> TP sell (after fee) </dt>
+                <dd> {{ formatGold item.values.tp_sells icons}} </dd>
+              </dl>
+            </p>
+          </div>
+        {{/if}}
+
+        {{# if item.values.salvage_sells }}
+          <div role="tabpanel" class="tab-pane" id="{{item.id}}_salvage_sell">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th> Icon </th>
+                  <th> Name </th>
+                  <th> Expected amount </th>
+                  <th> List </th>
+                  <th> Sell </th>
+                  <th> List total </th>
+                  <th> Sell total </th>
+                </tr>
+              </thead>
+
+              <tbody>
+                {{#each item.salvages_to}}
+                  <tr>
+                    <td> <img class="icon-medium" src="{{icon}}"/> </td>
+                    <td> {{name}} </td>
+                    <td> {{salvage_rate_blsk}} </td>
+                    <td> {{formatGold tp_value.buys ../icons}} </td>
+                    <td> {{formatGold tp_value.sells ../icons}} </td>
+                    <td> {{formatGold component_expected_value_buys ../icons}} </td>
+                    <td> {{formatGold component_expected_value_sells ../icons}} </td>
+                  </tr>
+                {{/each}}
+              </tbody>
+
+              <tfoot>
+                <tr>
+                  <td colspan=5> Pre TP tax </td>
+                  <td> {{formatGold item.values.salvage_buys_pre_tax icons}} </td>
+                  <td> {{formatGold item.values.salvage_sells_pre_tax icons}} </td>
+                </tr>
+                <tr>
+                  <td colspan=5> After TP tax </td>
+                  <td> {{formatGold item.values.salvage_buys icons}} </td>
+                  <td> {{formatGold item.values.salvage_sells icons}} </td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+        {{/if}}
+      </div>
+
+
+    </div>
+  </script>
+</body>
+</html>
