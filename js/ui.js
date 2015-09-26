@@ -123,13 +123,31 @@ $(document).ready(function () {
             // Open this row
             row.child(createDetailedUI(item, icons)).show();
 
-            $(`#${item_id}_salvage_table`).DataTable({
-              "paging":   false,
-              "order": [[ 4, "desc"]],
-              "searching": false,
-              "info": false,
-            });
+            if ("salvage_sells" in item["values"]) {
+              $(`#${item_id}_salvage_table`).DataTable({
+                "paging":   false,
+                "order": [[ 4, "desc"]],
+                "searching": false,
+                "info": false,
+              });
+            }
+
+            console.log(`#${item_id}_${item.values.strategy}`);
+            $(`#${item_id}_panels`).removeClass("active");
+            $(`#${item_id}_${item.values.strategy}`).addClass("active");
+
+            $(`#${item_id}_tabs`).removeClass("active");
+            $(`#${item_id}_${item.values.strategy}_tab`).addClass("active");
         }
+
+
+        // It sometimes does not draw, so force it
+        table.draw();
+
+        // HACK: Apparantly chrome forgets to redraw sometimes
+        $('body').each(function () {
+          var redraw = this.offsetHeight;
+        });
       });
     }
   }).then(function () {

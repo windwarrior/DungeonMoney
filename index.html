@@ -72,11 +72,12 @@
 
   <script id="dungeon_item_table" type="text/x-handlebars-template">
   <div role="tabpanel" class="tab-pane" id="{{ dungeon_symbolic_name }}">
-    <table class="table" id="{{ dungeon_symbolic_name }}_table">
+    <table class="table" id="{{ dungeon_symbolic_name }}_table" width="100%">
       <thead>
         <tr>
           <th>Icon</th>
           <th width="100%">Name</th>
+          <td> Item ID </th>
           <th>Cost in tokens</th>
           <th>Total value</th>
           <th>Value per token</th>
@@ -87,6 +88,7 @@
           <tr data-item-id={{id}} class="child-revealer">
             <td><img src="{{icon}}"/></td>
             <td width="100%">{{full_name}}</td>
+            <td> {{id}} </th>
             <td data-order={{token_cost}}>{{formatToken token_cost ../token_icon}}</td>
             <td data-order={{values.strategy_profit}}>{{formatGold values.strategy_profit ../icons}}</td>
             <td data-order={{values.strategy_profit_per_token}}>{{formatGold values.strategy_profit_per_token ../icons}}</td>
@@ -100,35 +102,35 @@
   <script id="item_detail_row" type="text/x-handlebars-template">
     <div>
       <!-- Nav tabs -->
-      <ul class="nav nav-tabs" role="tablist">
+      <ul class="nav nav-tabs" id="{{item.id}}_tabs" role="tablist">
         {{# if item.values.sell }}
-          <li role="presentation">
-            <a href="#{{item.id}}_vendor_sell" aria-controls="{{item.id}}_vendor_sell" role="tab" data-toggle="tab">
+          <li role="presentation" id="{{item.id}}_sell_tab">
+            <a href="#{{item.id}}_sell" aria-controls="{{item.id}}_sell" id="{{item.id}}_vendor_sell_tab" role="tab" data-toggle="tab">
               Vendor
             </a>
           </li>
         {{/if}}
 
         {{# if item.values.tp_sells }}
-          <li role="presentation">
-            <a href="#{{item.id}}_tp_sell" aria-controls="{{item.id}}_tp_sell" role="tab" data-toggle="tab">
+          <li role="presentation" id="{{item.id}}_tp_sells_tab">
+            <a href="#{{item.id}}_tp_sells" aria-controls="{{item.id}}_tp_sells"  role="tab" data-toggle="tab">
               Trading Post
             </a>
           </li>
         {{/if}}
 
         {{# if item.values.salvage_sells }}
-          <li role="presentation">
-            <a href="#{{item.id}}_salvage_sell" aria-controls="{{item.id}}_salvage_sell" role="tab" data-toggle="tab">
+          <li role="presentation" id="{{item.id}}_salvage_sells_tab">
+            <a href="#{{item.id}}_salvage_sells" aria-controls="{{item.id}}_salvage_sells" role="tab" data-toggle="tab">
               Salvage (Black Lion Salvage Kit)
             </a>
           </li>
         {{/if}}
       </ul>
 
-      <div class="tab-content">
+      <div class="tab-content" id="{{item.id}}_panels">
         {{# if item.values.sell }}
-          <div role="tabpanel" class="tab-pane" id="{{item.id}}_vendor_sell">
+          <div role="tabpanel" class="tab-pane" id="{{item.id}}_sell">
             <p>
               <dl class="dl-horizontal" style="width: 200px">
                 <dt> Vendor value </dt>
@@ -139,24 +141,24 @@
         {{/if}}
 
         {{# if item.values.tp_sells }}
-          <div role="tabpanel" class="tab-pane" id="{{item.id}}_tp_sell">
+          <div role="tabpanel" class="tab-pane" id="{{item.id}}_tp_sells">
             <p>
 
               <dl class="dl-horizontal" style="width: 200px">
-                <dt> TP list </dt>
+                <dt> TP sell </dt>
                 <dd> {{ formatGold item.values.tp_buys_pre_tax icons}} </dd>
 
 
-                <dt> TP sell </dt>
+                <dt> TP list </dt>
                 <dd> {{ formatGold item.values.tp_sells_pre_tax icons}} </dd>
               </dl>
 
               <dl class="dl-horizontal" style="width: 200px">
-                <dt> TP list (after fee) </dt>
+                <dt> TP sell (after fee) </dt>
                 <dd> {{ formatGold item.values.tp_buys icons}} </dd>
 
 
-                <dt> TP sell (after fee) </dt>
+                <dt> TP list (after fee) </dt>
                 <dd> {{ formatGold item.values.tp_sells icons}} </dd>
               </dl>
             </p>
@@ -164,17 +166,17 @@
         {{/if}}
 
         {{# if item.values.salvage_sells }}
-          <div role="tabpanel" class="tab-pane" id="{{item.id}}_salvage_sell">
-            <table class="table" id="{{item.id}}_salvage_table">
+          <div role="tabpanel" class="tab-pane" id="{{item.id}}_salvage_sells">
+            <table class="table" id="{{item.id}}_salvage_table" width="100%">
               <thead>
                 <tr>
                   <th> Icon </th>
                   <th> Name </th>
-                  <th> Expected amount </th>
+                  <th> Expected </th>
                   <th> Sell </th>
                   <th> List </th>
-                  <th> Sell total </th>
-                  <th> List total </th>
+                  <th> Sell Total </th>
+                  <th> List Total </th>
                 </tr>
               </thead>
 

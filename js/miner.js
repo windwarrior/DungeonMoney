@@ -60,6 +60,8 @@ function assignTokenCost(items_array) {
         item["token_cost"] = assignArmorTokenCost(item);
       } else if (item["type"].toLowerCase() == "consumable") {
         item["token_cost"] = assignConsumableTokenCost(item);
+      } else if (item["type"].toLowerCase() == "upgradecomponent") {
+        item["token_cost"] = assignUpgradeComponentTokenCost(item);
       }
     }
 
@@ -114,6 +116,19 @@ function assignWeaponTokenCost(item) {
   return TOKEN_COSTS.WEAPON_TOKEN_COST[weapon_name];
 }
 
+function assignUpgradeComponentTokenCost(item) {
+  switch(item["rarity"].toLowerCase()) {
+    case "masterwork":
+      return item["details"]["type"].toLowerCase() == "rune" ? TOKEN_COSTS.MINOR_RUNE : TOKEN_COSTS.MINOR_SIGIL;
+    case "rare":
+      return item["details"]["type"].toLowerCase() == "rune" ? TOKEN_COSTS.MAJOR_RUNE : TOKEN_COSTS.MAJOR_SIGIL;
+    case "exotic":
+      return item["details"]["type"].toLowerCase() == "rune" ? TOKEN_COSTS.SUPERIOR_RUNE : TOKEN_COSTS.SUPERIOR_SIGIL;
+    default:
+      return 0;
+  }
+}
+
 /*
 Classifies items based on their possible profit potential
 
@@ -140,7 +155,7 @@ function classifyItems(items_array) {
       // It is tpable!
       item["values"]["tp_sells_pre_tax"] = item["tp_value"]["sells"];
       item["values"]["tp_buys_pre_tax"] = item["tp_value"]["buys"]
-      
+
       item["values"]["tp_sells"] = item["tp_value"]["sells"] * TP_PROFIT_MARGIN;
       item["values"]["tp_buys"] = item["tp_value"]["buys"] * TP_PROFIT_MARGIN;
     }

@@ -36855,33 +36855,63 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 var range = require('./range');
 
 module.exports = {
-  dungeons: [
-  /*{
+  dungeons: [{
     dungeon_name: "Caudecus's Manor",
     dungeon_symbolic_name: "cadecus_manor",
     currency_id: 9,
-    item_ids: [
-      8881, // Powerful Potion of Outlaw Slaying
-      8897, // Knavish Tonic
-      10255, // Recipe: Extended Potion of Outlaw Slaying
-      //...range.range(24843, 24845), // runes of aristocracy
-      ...range.range(35829, 35846), // light exotic armor pieces
-      ...range.range(35811, 35828), // medium exotic armor pieces
-      ...range.range(35847, 35864), // heavy exotic armor pieces
-      ...range.range(35754, 35810), // weapons
-    ]
-  },*/
+    item_ids: [8881, // Powerful Potion of Outlaw Slaying
+    8897, // Knavish Tonic
+    10255].concat(_toConsumableArray(range.range(24676, 24679)), _toConsumableArray(range.range(24843, 24846)), _toConsumableArray(range.range(35754, 35811)), _toConsumableArray(range.range(35811, 35829)), _toConsumableArray(range.range(35829, 35847)), _toConsumableArray(range.range(35847, 35864)))
+  }, // heavy exotic armor pieces
   {
     dungeon_name: "Ascalonian Catacombs",
     dungeon_symbolic_name: "ascalonian_catacombs",
     currency_id: 5,
-    item_ids: [].concat(_toConsumableArray(range.range(35865, 35921)), _toConsumableArray(range.range(35922, 35939)), _toConsumableArray(range.range(35940, 35957)), _toConsumableArray(range.range(35958, 35974)))
+    item_ids: [8896, // Ghostly Tonic
+    10254].concat(_toConsumableArray(range.range(24807, 24810)), _toConsumableArray(range.range(24840, 24843)), _toConsumableArray(range.range(35865, 35922)), _toConsumableArray(range.range(35922, 35940)), _toConsumableArray(range.range(35940, 35958)), _toConsumableArray(range.range(35958, 35975)))
+  }, // heavy exotic armor
+  {
+    dungeon_name: "Twilight Arbor",
+    dungeon_symbolic_name: "twilight_arbor",
+    currency_id: 5,
+    item_ids: [8882, // Powerful Potion of Nightmare Court Slaying
+    8899, // Overgrown Tonic
+    10257].concat(_toConsumableArray(range.range(24846, 24849)), _toConsumableArray(range.range(24679, 24682)), _toConsumableArray(range.range(17372, 17390)), _toConsumableArray(range.range(18576, 18612)), _toConsumableArray(range.range(17353, 17372)), _toConsumableArray(range.range(18538, 18576)))
+  }, // weapons (magi/rabid)
+  {
+    dungeon_name: "Sorrow's Embrace",
+    dungeon_symbolic_name: "sorrows_embrace",
+    currency_id: 5,
+    item_ids: [8892, // Powerful Potion of Dredge Slaying
+    8898, // Tonic of the Moletariate
+    10256].concat(_toConsumableArray(range.range(24849, 24852)), _toConsumableArray(range.range(24682, 24685)), _toConsumableArray(range.range(17409, 17426)), _toConsumableArray(range.range(18724, 18760)), _toConsumableArray(range.range(17390, 17409)), _toConsumableArray(range.range(18686, 18724)))
   }]
 };
+// Recipe: Extended Potion of Outlaw Slaying
+// sigil of justice
+// runes of aristocracy
+// weapons
+// medium exotic armor pieces
+// light exotic armor pieces
+// Recipe: Extended Potion of Ghost Slaying
+// Sigil of ghost slaying
+// Rune of the monk
 // weapons
 // medium exotic armor
 // light exotic armor
-// heavy exotic armor
+// Recipe:Extended Potion of Nightmare Court Slaying
+// Rune of the Nightmare
+// Sigil of Dreams
+// exotic armor (rabid)
+// exotic armor (magi/rampager)
+// weapons (rampager)
+// Recipe: Extended Potion of Dredge Slaying
+// Rune of the Forgeman
+// Sigil of Sorrow
+// exotic armor (Carrion)
+// exotic armor (knights/soldiers)
+//exotic weapon (carrion)
+//exotic weapon (knights/soldiers)
 
 },{"./range":234}],233:[function(require,module,exports){
 'use strict';
@@ -36955,6 +36985,8 @@ function assignTokenCost(items_array) {
         item["token_cost"] = assignArmorTokenCost(item);
       } else if (item["type"].toLowerCase() == "consumable") {
         item["token_cost"] = assignConsumableTokenCost(item);
+      } else if (item["type"].toLowerCase() == "upgradecomponent") {
+        item["token_cost"] = assignUpgradeComponentTokenCost(item);
       }
     }
   } catch (err) {
@@ -37020,6 +37052,19 @@ function assignWeaponTokenCost(item) {
   var weapon_name = item["details"]["type"].toLowerCase();
 
   return TOKEN_COSTS.WEAPON_TOKEN_COST[weapon_name];
+}
+
+function assignUpgradeComponentTokenCost(item) {
+  switch (item["rarity"].toLowerCase()) {
+    case "masterwork":
+      return item["details"]["type"].toLowerCase() == "rune" ? TOKEN_COSTS.MINOR_RUNE : TOKEN_COSTS.MINOR_SIGIL;
+    case "rare":
+      return item["details"]["type"].toLowerCase() == "rune" ? TOKEN_COSTS.MAJOR_RUNE : TOKEN_COSTS.MAJOR_SIGIL;
+    case "exotic":
+      return item["details"]["type"].toLowerCase() == "rune" ? TOKEN_COSTS.SUPERIOR_RUNE : TOKEN_COSTS.SUPERIOR_SIGIL;
+    default:
+      return 0;
+  }
 }
 
 /*
@@ -37249,13 +37294,13 @@ var SOLDIERS_INSIGNIA_ID = 46712;
 var MAGIS_INSIGNIA_ID = 46711;
 var RABID_INSIGNIA_ID = 46710;
 var DIRE_INSIGNIA_ID = 49522;
-var SHAMAN_INSIGNIA_ID = 46708;
+var SHAMANS_INSIGNIA_ID = 46708;
 
 var SOLDIERS_INSCRIPTION_ID = 46688;
 var MAGIS_INSCRIPTION_ID = 46687;
 var RABID_INSCRIPTION_ID = 46686;
 var DIRE_INSCRIPTION_ID = 46690;
-var SHAMAN_INSCRIPTION_ID = 46684;
+var SHAMANS_INSCRIPTION_ID = 46684;
 
 var INS_SALVAGE_RATE_BLSK = 0.5; // This is generally agreed upon
 
@@ -37277,7 +37322,7 @@ var SalvageService = {
       case MITHRIL_ORE_ID:
         return isWeapon ? MITHRIL_ORE_WEAPON_RATE_BLSK : MITHRIL_ORE_ARMOR_RATE_BLSK;
       case ORICHALCUM_ORE_ID:
-        return isWeapon ? ORICHACLUM_ORE_WEAPON_RATE_BLSK : ORICHALCUM_ORE_ARMOR_RATE_BLSK;
+        return isWeapon ? ORICHALCUM_ORE_WEAPON_RATE_BLSK : ORICHALCUM_ORE_ARMOR_RATE_BLSK;
       case THICK_LEATHER_SECTION_ID:
         return THICK_LEATHER_SECTION_RATE_BLSK;
       case HARDENED_LEATHER_SECTION_ID:
@@ -37292,12 +37337,12 @@ var SalvageService = {
       case MAGIS_INSIGNIA_ID:
       case RABID_INSIGNIA_ID:
       case DIRE_INSIGNIA_ID:
-      case SHAMAN_INSIGNIA_ID:
+      case SHAMANS_INSIGNIA_ID:
       case SOLDIERS_INSCRIPTION_ID:
       case MAGIS_INSCRIPTION_ID:
       case RABID_INSCRIPTION_ID:
       case DIRE_INSCRIPTION_ID:
-      case SHAMAN_INSCRIPTION_ID:
+      case SHAMANS_INSCRIPTION_ID:
         return INS_SALVAGE_RATE_BLSK;
       default:
         return 0;
@@ -37306,7 +37351,7 @@ var SalvageService = {
 
   // The function that creates a promise for a set of items, asks the TP about
   // them,merges the result and also adds salvage rate information to it
-  _createCommonSalvageComponentPromise: function _createCommonSalvageComponentPromise(item_ids) {
+  _createCommonSalvageComponentPromise: function _createCommonSalvageComponentPromise(item_ids, isWeapon) {
     var promises = [];
 
     promises.push(api_utils.getItemsPromise(item_ids));
@@ -37323,7 +37368,7 @@ var SalvageService = {
         for (var _iterator = item_arr[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
           var item = _step.value;
 
-          item["salvage_rate_blsk"] = this._exoticSalvageRateBlskByID(item["id"], item["type"].toLowerCase() == "weapon");
+          item["salvage_rate_blsk"] = this._exoticSalvageRateBlskByID(item["id"], isWeapon);
 
           item["component_expected_value_buys"] = item["salvage_rate_blsk"] * item["tp_value"]["buys"];
           item["component_expected_value_sells"] = item["salvage_rate_blsk"] * item["tp_value"]["sells"];
@@ -37350,7 +37395,7 @@ var SalvageService = {
   _createLightArmorSalvagePromise: function _createLightArmorSalvagePromise() {
     var item_ids = [SILK_SCRAP_ID, GOSSAMER_SCRAP_ID, ECTOPLASM_ID];
 
-    return this._createCommonSalvageComponentPromise(item_ids).then((function (item_arr) {
+    return this._createCommonSalvageComponentPromise(item_ids, false).then((function (item_arr) {
       this.salvage_light_armor_template_blsk = item_arr;
     }).bind(this));
   },
@@ -37358,7 +37403,7 @@ var SalvageService = {
   _createMediumArmorSalvagePromise: function _createMediumArmorSalvagePromise() {
     var item_ids = [THICK_LEATHER_SECTION_ID, HARDENED_LEATHER_SECTION_ID, ECTOPLASM_ID];
 
-    return this._createCommonSalvageComponentPromise(item_ids).then((function (item_arr) {
+    return this._createCommonSalvageComponentPromise(item_ids, false).then((function (item_arr) {
       this.salvage_medium_armor_template_blsk = item_arr;
     }).bind(this));
   },
@@ -37366,7 +37411,7 @@ var SalvageService = {
   _createHeavyArmorSalvagePromise: function _createHeavyArmorSalvagePromise() {
     var item_ids = [MITHRIL_ORE_ID, ORICHALCUM_ORE_ID, ECTOPLASM_ID];
 
-    return this._createCommonSalvageComponentPromise(item_ids).then((function (item_arr) {
+    return this._createCommonSalvageComponentPromise(item_ids, false).then((function (item_arr) {
       this.salvage_heavy_armor_template_blsk = item_arr;
     }).bind(this));
   },
@@ -37374,15 +37419,15 @@ var SalvageService = {
   _createWeaponSalvagePromise: function _createWeaponSalvagePromise() {
     var item_ids = [MITHRIL_ORE_ID, ORICHALCUM_ORE_ID, ELDER_WOOD_LOG_ID, ANCIENT_WOOD_LOG_ID, ECTOPLASM_ID];
 
-    return this._createCommonSalvageComponentPromise(item_ids).then((function (item_arr) {
+    return this._createCommonSalvageComponentPromise(item_ids, true).then((function (item_arr) {
       this.salvage_weapon_template_blsk = item_arr;
     }).bind(this));
   },
 
   _createInsPromise: function _createInsPromise() {
-    var item_ids = [SOLDIERS_INSIGNIA_ID, MAGIS_INSIGNIA_ID, RABID_INSIGNIA_ID, DIRE_INSIGNIA_ID, SHAMAN_INSIGNIA_ID, SOLDIERS_INSCRIPTION_ID, MAGIS_INSCRIPTION_ID, RABID_INSCRIPTION_ID, DIRE_INSCRIPTION_ID, SHAMAN_INSCRIPTION_ID];
+    var item_ids = [SOLDIERS_INSIGNIA_ID, MAGIS_INSIGNIA_ID, RABID_INSIGNIA_ID, DIRE_INSIGNIA_ID, SHAMANS_INSIGNIA_ID, SOLDIERS_INSCRIPTION_ID, MAGIS_INSCRIPTION_ID, RABID_INSCRIPTION_ID, DIRE_INSCRIPTION_ID, SHAMANS_INSCRIPTION_ID];
 
-    return this._createCommonSalvageComponentPromise(item_ids).then((function (item_arr) {
+    return this._createCommonSalvageComponentPromise(item_ids, false).then((function (item_arr) {
       this.ins_list_blsk = item_arr;
     }).bind(this));
   },
@@ -37405,8 +37450,6 @@ var SalvageService = {
       }
     });
 
-    console.log(attrs);
-
     var isWeapon = item["type"].toLowerCase() == "weapon";
 
     var id = -1;
@@ -37421,7 +37464,7 @@ var SalvageService = {
         break;
       case "Vitality":
         switch (attrs[1]["attribute"]) {
-          case "Condition Damage":
+          case "ConditionDamage":
             id = isWeapon ? SHAMANS_INSCRIPTION_ID : SHAMANS_INSIGNIA_ID;
             break;
         }
@@ -37431,7 +37474,7 @@ var SalvageService = {
           case "Tougness":
             id = isWeapon ? DIRE_INSCRIPTION_ID : DIRE_INSIGNIA_ID;
             break;
-          case "Power":
+          case "Precision":
             switch (attrs[2]["attribute"]) {
               case "Toughness":
                 id = isWeapon ? RABID_INSCRIPTION_ID : RABID_INSIGNIA_ID;
@@ -37466,14 +37509,11 @@ var SalvageService = {
 
     var res = [];
 
-    console.log(item);
-
     // Just to be sure, lets check if the item is salvagable
     if (!("NoSalvage" in item["flags"]) && (item["type"].toLowerCase() == "weapon" || item["type"].toLowerCase() == "armor")) {
       if (item["rarity"].toLowerCase() == "exotic") {
         // Just not yet considering rares
         if (item["type"].toLowerCase() == "weapon") {
-          console.log("Its a weapon!");
           res = this.salvage_weapon_template_blsk.slice(0); // Shallow copy of the salvage template, since we dont really need to copy the inner objects anyway
         } else {
             switch (item["details"]["weight_class"].toLowerCase()) {
@@ -37548,7 +37588,13 @@ module.exports = {
   },
   SLAYING_POTION_COST: 1,
   TRANSFORM_TONIC_COST: 10,
-  RECIPE_COST: 400
+  RECIPE_COST: 400,
+  MINOR_RUNE: 10,
+  MAJOR_RUNE: 30,
+  SUPERIOR_RUNE: 120,
+  MINOR_SIGIL: 10,
+  MAJOR_SIGIL: 50,
+  SUPERIOR_SIGIL: 150
 };
 
 },{}],237:[function(require,module,exports){
@@ -37712,13 +37758,30 @@ $(document).ready(function () {
             // Open this row
             row.child(createDetailedUI(item, icons)).show();
 
-            $('#' + item_id + '_salvage_table').DataTable({
-              "paging": false,
-              "order": [[4, "desc"]],
-              "searching": false,
-              "info": false
-            });
+            if ("salvage_sells" in item["values"]) {
+              $('#' + item_id + '_salvage_table').DataTable({
+                "paging": false,
+                "order": [[4, "desc"]],
+                "searching": false,
+                "info": false
+              });
+            }
+
+            console.log('#' + item_id + '_' + item.values.strategy);
+            $('#' + item_id + '_panels').removeClass("active");
+            $('#' + item_id + '_' + item.values.strategy).addClass("active");
+
+            $('#' + item_id + '_tabs').removeClass("active");
+            $('#' + item_id + '_' + item.values.strategy + '_tab').addClass("active");
           }
+
+          // It sometimes does not draw, so force it
+          table.draw();
+
+          // HACK: Apparantly chrome forgets to redraw sometimes
+          $('body').each(function () {
+            var redraw = this.offsetHeight;
+          });
         });
       };
 

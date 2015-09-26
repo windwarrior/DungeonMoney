@@ -39,13 +39,13 @@ var SOLDIERS_INSIGNIA_ID = 46712;
 var MAGIS_INSIGNIA_ID = 46711;
 var RABID_INSIGNIA_ID = 46710;
 var DIRE_INSIGNIA_ID = 49522;
-var SHAMAN_INSIGNIA_ID = 46708;
+var SHAMANS_INSIGNIA_ID = 46708;
 
 var SOLDIERS_INSCRIPTION_ID = 46688;
 var MAGIS_INSCRIPTION_ID = 46687;
 var RABID_INSCRIPTION_ID = 46686;
 var DIRE_INSCRIPTION_ID = 46690;
-var SHAMAN_INSCRIPTION_ID = 46684;
+var SHAMANS_INSCRIPTION_ID = 46684;
 
 var INS_SALVAGE_RATE_BLSK = 0.5; // This is generally agreed upon
 
@@ -68,7 +68,7 @@ var SalvageService = {
       case MITHRIL_ORE_ID:
         return isWeapon ? MITHRIL_ORE_WEAPON_RATE_BLSK : MITHRIL_ORE_ARMOR_RATE_BLSK ;
       case ORICHALCUM_ORE_ID:
-        return  isWeapon ? ORICHACLUM_ORE_WEAPON_RATE_BLSK : ORICHALCUM_ORE_ARMOR_RATE_BLSK;
+        return  isWeapon ? ORICHALCUM_ORE_WEAPON_RATE_BLSK : ORICHALCUM_ORE_ARMOR_RATE_BLSK;
       case THICK_LEATHER_SECTION_ID:
         return THICK_LEATHER_SECTION_RATE_BLSK;
       case HARDENED_LEATHER_SECTION_ID:
@@ -83,12 +83,12 @@ var SalvageService = {
       case MAGIS_INSIGNIA_ID:
       case RABID_INSIGNIA_ID:
       case DIRE_INSIGNIA_ID:
-      case SHAMAN_INSIGNIA_ID:
+      case SHAMANS_INSIGNIA_ID:
       case SOLDIERS_INSCRIPTION_ID:
       case MAGIS_INSCRIPTION_ID:
       case RABID_INSCRIPTION_ID:
       case DIRE_INSCRIPTION_ID:
-      case SHAMAN_INSCRIPTION_ID:
+      case SHAMANS_INSCRIPTION_ID:
         return INS_SALVAGE_RATE_BLSK;
       default:
         return 0;
@@ -97,7 +97,7 @@ var SalvageService = {
 
   // The function that creates a promise for a set of items, asks the TP about
   // them,merges the result and also adds salvage rate information to it
-  _createCommonSalvageComponentPromise: function (item_ids) {
+  _createCommonSalvageComponentPromise: function (item_ids, isWeapon) {
     let promises = [];
 
     promises.push(api_utils.getItemsPromise(item_ids));
@@ -107,7 +107,7 @@ var SalvageService = {
       return api_utils.mergeItemArrays(arr[0], arr[1]);
     }).then(function (item_arr) {
         for (let item of item_arr) {
-          item["salvage_rate_blsk"] = this._exoticSalvageRateBlskByID(item["id"], item["type"].toLowerCase() == "weapon");
+          item["salvage_rate_blsk"] = this._exoticSalvageRateBlskByID(item["id"], isWeapon);
 
           item["component_expected_value_buys"] = item["salvage_rate_blsk"] * item["tp_value"]["buys"];
           item["component_expected_value_sells"] = item["salvage_rate_blsk"] * item["tp_value"]["sells"];
@@ -120,7 +120,7 @@ var SalvageService = {
   _createLightArmorSalvagePromise: function () {
     let item_ids = [SILK_SCRAP_ID, GOSSAMER_SCRAP_ID, ECTOPLASM_ID];
 
-    return this._createCommonSalvageComponentPromise(item_ids).then(function (item_arr) {
+    return this._createCommonSalvageComponentPromise(item_ids, false).then(function (item_arr) {
       this.salvage_light_armor_template_blsk = item_arr;
     }.bind(this));
   },
@@ -128,7 +128,7 @@ var SalvageService = {
   _createMediumArmorSalvagePromise: function () {
     let item_ids = [THICK_LEATHER_SECTION_ID, HARDENED_LEATHER_SECTION_ID, ECTOPLASM_ID];
 
-    return this._createCommonSalvageComponentPromise(item_ids).then(function (item_arr) {
+    return this._createCommonSalvageComponentPromise(item_ids, false).then(function (item_arr) {
       this.salvage_medium_armor_template_blsk = item_arr;
     }.bind(this));
   },
@@ -136,7 +136,7 @@ var SalvageService = {
   _createHeavyArmorSalvagePromise: function () {
     let item_ids = [MITHRIL_ORE_ID, ORICHALCUM_ORE_ID, ECTOPLASM_ID];
 
-    return this._createCommonSalvageComponentPromise(item_ids).then(function (item_arr) {
+    return this._createCommonSalvageComponentPromise(item_ids, false).then(function (item_arr) {
       this.salvage_heavy_armor_template_blsk = item_arr;
     }.bind(this));
   },
@@ -144,16 +144,16 @@ var SalvageService = {
   _createWeaponSalvagePromise: function () {
     let item_ids = [MITHRIL_ORE_ID, ORICHALCUM_ORE_ID, ELDER_WOOD_LOG_ID, ANCIENT_WOOD_LOG_ID, ECTOPLASM_ID];
 
-    return this._createCommonSalvageComponentPromise(item_ids).then(function (item_arr) {
+    return this._createCommonSalvageComponentPromise(item_ids, true).then(function (item_arr) {
       this.salvage_weapon_template_blsk = item_arr;
     }.bind(this));
   },
 
   _createInsPromise: function () {
-    let item_ids = [SOLDIERS_INSIGNIA_ID, MAGIS_INSIGNIA_ID, RABID_INSIGNIA_ID, DIRE_INSIGNIA_ID, SHAMAN_INSIGNIA_ID,
-                    SOLDIERS_INSCRIPTION_ID, MAGIS_INSCRIPTION_ID, RABID_INSCRIPTION_ID, DIRE_INSCRIPTION_ID, SHAMAN_INSCRIPTION_ID];
+    let item_ids = [SOLDIERS_INSIGNIA_ID, MAGIS_INSIGNIA_ID, RABID_INSIGNIA_ID, DIRE_INSIGNIA_ID, SHAMANS_INSIGNIA_ID,
+                    SOLDIERS_INSCRIPTION_ID, MAGIS_INSCRIPTION_ID, RABID_INSCRIPTION_ID, DIRE_INSCRIPTION_ID, SHAMANS_INSCRIPTION_ID];
 
-    return this._createCommonSalvageComponentPromise(item_ids).then(function (item_arr) {
+    return this._createCommonSalvageComponentPromise(item_ids, false).then(function (item_arr) {
       this.ins_list_blsk = item_arr;
     }.bind(this));
   },
@@ -176,7 +176,6 @@ var SalvageService = {
       }
     });
 
-    console.log(attrs);
 
     var isWeapon = item["type"].toLowerCase() == "weapon";
 
@@ -192,7 +191,7 @@ var SalvageService = {
         break;
       case "Vitality":
         switch (attrs[1]["attribute"]) {
-          case "Condition Damage":
+          case "ConditionDamage":
             id = isWeapon ? SHAMANS_INSCRIPTION_ID : SHAMANS_INSIGNIA_ID;
             break;
         }
@@ -202,7 +201,7 @@ var SalvageService = {
           case "Tougness":
             id = isWeapon ? DIRE_INSCRIPTION_ID : DIRE_INSIGNIA_ID;
             break;
-          case "Power":
+          case "Precision":
             switch (attrs[2]["attribute"]) {
               case "Toughness":
                 id = isWeapon ? RABID_INSCRIPTION_ID : RABID_INSIGNIA_ID;
@@ -237,7 +236,6 @@ var SalvageService = {
 
     let res = [];
 
-    console.log(item);
 
     // Just to be sure, lets check if the item is salvagable
     if (!("NoSalvage" in item["flags"]) &&
@@ -245,7 +243,6 @@ var SalvageService = {
         if (item["rarity"].toLowerCase() == "exotic") {
           // Just not yet considering rares
           if (item["type"].toLowerCase() == "weapon") {
-            console.log("Its a weapon!");
             res = this.salvage_weapon_template_blsk.slice(0); // Shallow copy of the salvage template, since we dont really need to copy the inner objects anyway
           } else {
             switch (item["details"]["weight_class"].toLowerCase()) {
