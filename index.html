@@ -84,7 +84,7 @@
       </thead>
       <tbody>
         {{#each items}}
-          <tr data-item-id={{id}}>
+          <tr data-item-id={{id}} class="child-revealer">
             <td><img src="{{icon}}"/></td>
             <td width="100%">{{full_name}}</td>
             <td data-order={{token_cost}}>{{formatToken token_cost ../token_icon}}</td>
@@ -165,16 +165,16 @@
 
         {{# if item.values.salvage_sells }}
           <div role="tabpanel" class="tab-pane" id="{{item.id}}_salvage_sell">
-            <table class="table">
+            <table class="table" id="{{item.id}}_salvage_table">
               <thead>
                 <tr>
                   <th> Icon </th>
                   <th> Name </th>
                   <th> Expected amount </th>
-                  <th> List </th>
                   <th> Sell </th>
-                  <th> List total </th>
+                  <th> List </th>
                   <th> Sell total </th>
+                  <th> List total </th>
                 </tr>
               </thead>
 
@@ -183,11 +183,11 @@
                   <tr>
                     <td> <img class="icon-medium" src="{{icon}}"/> </td>
                     <td> {{name}} </td>
-                    <td> {{salvage_rate_blsk}} </td>
-                    <td> {{formatGold tp_value.buys ../icons}} </td>
-                    <td> {{formatGold tp_value.sells ../icons}} </td>
-                    <td> {{formatGold component_expected_value_buys ../icons}} </td>
-                    <td> {{formatGold component_expected_value_sells ../icons}} </td>
+                    <td> {{salvage_rate_blsk}}</td>
+                    <td data-order={{tp_value.buys}}> {{formatGold tp_value.buys ../icons}} </td>
+                    <td data-order={{tp_value.sells}}> {{formatGold tp_value.sells ../icons}} </td>
+                    <td data-order={{component_expected_value_buys}}> {{formatGold component_expected_value_buys ../icons}} </td>
+                    <td data-order={{component_expected_value_sells}}> {{formatGold component_expected_value_sells ../icons}} </td>
                   </tr>
                 {{/each}}
               </tbody>

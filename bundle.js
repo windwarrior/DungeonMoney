@@ -36875,11 +36875,10 @@ module.exports = {
     dungeon_name: "Ascalonian Catacombs",
     dungeon_symbolic_name: "ascalonian_catacombs",
     currency_id: 5,
-    item_ids: [].concat(_toConsumableArray(range.range(35922, 35939)), _toConsumableArray(range.range(35940, 35957)), _toConsumableArray(range.range(35958, 35974)))
+    item_ids: [].concat(_toConsumableArray(range.range(35865, 35921)), _toConsumableArray(range.range(35922, 35939)), _toConsumableArray(range.range(35940, 35957)), _toConsumableArray(range.range(35958, 35974)))
   }]
 };
-
-//  ...range.range(35865, 35921), // weapons
+// weapons
 // medium exotic armor
 // light exotic armor
 // heavy exotic armor
@@ -37214,6 +37213,9 @@ var api_utils = require('./api_utils');
 var T5_RATE_BLSK = 2; // This is data pulled from my hat, its based on the 1,5 chance on getting silk/thick/mithril with mystic
 var T6_RATE_BLSK = 0.5;
 
+var T5_WEAPON_RATE_BLSK = T5_RATE_BLSK / 2;
+var T6_WEAPON_RATE_BLSK = T6_RATE_BLSK / 2;
+
 var SILK_SCRAP_ID = 19748;
 var SILK_SALVAGE_RATE_BLSK = T5_RATE_BLSK;
 
@@ -37221,16 +37223,24 @@ var GOSSAMER_SCRAP_ID = 19745;
 var GOSSAMER_SALVAGE_RATE_BLSK = T6_RATE_BLSK;
 
 var MITHRIL_ORE_ID = 19700;
-var MITHRIL_ORE_RATE_BLSK = T5_RATE_BLSK;
+var MITHRIL_ORE_ARMOR_RATE_BLSK = T5_RATE_BLSK;
+var MITHRIL_ORE_WEAPON_RATE_BLSK = T5_WEAPON_RATE_BLSK;
 
 var ORICHALCUM_ORE_ID = 19701;
-var ORICHALCUM_ORE_RATE_BLSK = T6_RATE_BLSK;
+var ORICHALCUM_ORE_ARMOR_RATE_BLSK = T6_RATE_BLSK;
+var ORICHALCUM_ORE_WEAPON_RATE_BLSK = T6_WEAPON_RATE_BLSK;
 
 var THICK_LEATHER_SECTION_ID = 19729;
 var THICK_LEATHER_SECTION_RATE_BLSK = T5_RATE_BLSK;
 
 var HARDENED_LEATHER_SECTION_ID = 19732;
 var HARDENED_LEATHER_SECTION_RATE_BLSK = T6_RATE_BLSK;
+
+var ELDER_WOOD_LOG_ID = 19722;
+var ELDER_WOOD_WEAPON_RATE_BLSK = T5_WEAPON_RATE_BLSK;
+
+var ANCIENT_WOOD_LOG_ID = 19725;
+var ANCIENT_WOOD_WEAPON_RATE_BLSK = T6_WEAPON_RATE_BLSK;
 
 var ECTOPLASM_ID = 19721;
 var ECTOPLASM_SALVAGE_RATE_BLSK = 1.25; // This is generally agreed upon
@@ -37253,22 +37263,31 @@ var SalvageService = {
   // Remains false till we have downloaded some data from anet
   initialised: false,
 
-  _salvageRateByID: function _salvageRateByID(id) {
+  _exoticSalvageRateBlskByID: function _exoticSalvageRateBlskByID(id, isWeapon) {
+    /*
+    Ores can both be salvaged from armor and weapons, but weapons also produce
+    wood, so the drop rates must differ. Ores check wether its a weapon to
+    have the ability to have individual droprates
+    */
     switch (id) {
       case SILK_SCRAP_ID:
         return SILK_SALVAGE_RATE_BLSK;
       case GOSSAMER_SCRAP_ID:
         return GOSSAMER_SALVAGE_RATE_BLSK;
       case MITHRIL_ORE_ID:
-        return MITHRIL_ORE_RATE_BLSK;
+        return isWeapon ? MITHRIL_ORE_WEAPON_RATE_BLSK : MITHRIL_ORE_ARMOR_RATE_BLSK;
       case ORICHALCUM_ORE_ID:
-        return ORICHALCUM_ORE_RATE_BLSK;
+        return isWeapon ? ORICHACLUM_ORE_WEAPON_RATE_BLSK : ORICHALCUM_ORE_ARMOR_RATE_BLSK;
       case THICK_LEATHER_SECTION_ID:
         return THICK_LEATHER_SECTION_RATE_BLSK;
       case HARDENED_LEATHER_SECTION_ID:
         return HARDENED_LEATHER_SECTION_RATE_BLSK;
       case ECTOPLASM_ID:
         return ECTOPLASM_SALVAGE_RATE_BLSK;
+      case ELDER_WOOD_LOG_ID:
+        return ELDER_WOOD_WEAPON_RATE_BLSK;
+      case ANCIENT_WOOD_LOG_ID:
+        return ANCIENT_WOOD_WEAPON_RATE_BLSK;
       case SOLDIERS_INSIGNIA_ID:
       case MAGIS_INSIGNIA_ID:
       case RABID_INSIGNIA_ID:
@@ -37304,7 +37323,7 @@ var SalvageService = {
         for (var _iterator = item_arr[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
           var item = _step.value;
 
-          item["salvage_rate_blsk"] = this._salvageRateByID(item["id"]);
+          item["salvage_rate_blsk"] = this._exoticSalvageRateBlskByID(item["id"], item["type"].toLowerCase() == "weapon");
 
           item["component_expected_value_buys"] = item["salvage_rate_blsk"] * item["tp_value"]["buys"];
           item["component_expected_value_sells"] = item["salvage_rate_blsk"] * item["tp_value"]["sells"];
@@ -37353,7 +37372,7 @@ var SalvageService = {
   },
 
   _createWeaponSalvagePromise: function _createWeaponSalvagePromise() {
-    var item_ids = [MITHRIL_ORE_ID, ORICHALCUM_ORE_ID, ECTOPLASM_ID];
+    var item_ids = [MITHRIL_ORE_ID, ORICHALCUM_ORE_ID, ELDER_WOOD_LOG_ID, ANCIENT_WOOD_LOG_ID, ECTOPLASM_ID];
 
     return this._createCommonSalvageComponentPromise(item_ids).then((function (item_arr) {
       this.salvage_weapon_template_blsk = item_arr;
@@ -37435,7 +37454,7 @@ var SalvageService = {
   },
 
   init: function init() {
-    var promises = [this._createLightArmorSalvagePromise(), this._createMediumArmorSalvagePromise(), this._createHeavyArmorSalvagePromise(), this._createInsPromise()];
+    var promises = [this._createLightArmorSalvagePromise(), this._createMediumArmorSalvagePromise(), this._createHeavyArmorSalvagePromise(), this._createWeaponSalvagePromise(), this._createInsPromise()];
 
     return Promise.all(promises).then((function (arr) {
       this.initialised = true;
@@ -37453,7 +37472,8 @@ var SalvageService = {
     if (!("NoSalvage" in item["flags"]) && (item["type"].toLowerCase() == "weapon" || item["type"].toLowerCase() == "armor")) {
       if (item["rarity"].toLowerCase() == "exotic") {
         // Just not yet considering rares
-        if (item["type"] == "weapon") {
+        if (item["type"].toLowerCase() == "weapon") {
+          console.log("Its a weapon!");
           res = this.salvage_weapon_template_blsk.slice(0); // Shallow copy of the salvage template, since we dont really need to copy the inner objects anyway
         } else {
             switch (item["details"]["weight_class"].toLowerCase()) {
@@ -37673,7 +37693,7 @@ $(document).ready(function () {
 
         //tables[dungeon["dungeon_name"]] = table;
 
-        $('#' + dungeon["dungeon_symbolic_name"] + '_table').on('click', 'tr', function () {
+        $('#' + dungeon["dungeon_symbolic_name"] + '_table').on('click', 'tr.child-revealer', function () {
           var row = table.row(this);
 
           var item_id = $(this).data("item-id");
@@ -37691,6 +37711,13 @@ $(document).ready(function () {
           } else {
             // Open this row
             row.child(createDetailedUI(item, icons)).show();
+
+            $('#' + item_id + '_salvage_table').DataTable({
+              "paging": false,
+              "order": [[4, "desc"]],
+              "searching": false,
+              "info": false
+            });
           }
         });
       };

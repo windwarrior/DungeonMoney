@@ -22,7 +22,7 @@ module.exports = {
       dungeon_symbolic_name: "ascalonian_catacombs",
     	currency_id: 5,
       item_ids: [
-      //  ...range.range(35865, 35921), // weapons
+        ...range.range(35865, 35921), // weapons
         ...range.range(35922, 35939), // medium exotic armor
         ...range.range(35940, 35957), // light exotic armor
         ...range.range(35958, 35974), // heavy exotic armor

@@ -103,7 +103,7 @@ $(document).ready(function () {
 
       //tables[dungeon["dungeon_name"]] = table;
 
-      $(`#${dungeon["dungeon_symbolic_name"]}_table`).on('click', 'tr', function () {
+      $(`#${dungeon["dungeon_symbolic_name"]}_table`).on('click', 'tr.child-revealer', function () {
         let row = table.row(this);
 
         let item_id = $(this).data("item-id");
@@ -122,6 +122,13 @@ $(document).ready(function () {
         else {
             // Open this row
             row.child(createDetailedUI(item, icons)).show();
+
+            $(`#${item_id}_salvage_table`).DataTable({
+              "paging":   false,
+              "order": [[ 4, "desc"]],
+              "searching": false,
+              "info": false,
+            });
         }
       });
     }
