@@ -31,6 +31,7 @@ Handlebars.registerHelper("formatToken", function(token_cost, token_icon) {
 
 var miner = require('./miner');
 var DUNGEON_IDS = require('./dungeon_ids');
+var salvage = require('./salvage');
 
 $(document).ready(function () {
   // For the UI to work we first need icons for gold
@@ -48,6 +49,8 @@ $(document).ready(function () {
 
     console.log(icons);
   }));
+
+  first_order_promises.push(salvage.SalvageService.init());
 
   for (let dungeon of DUNGEON_IDS.dungeons) {
     let currency_promise = Promise.resolve($.ajax(`https://api.guildwars2.com/v2/currencies/${dungeon["currency_id"]}`)).then(function (result) {

@@ -21,13 +21,13 @@ module.exports = {
 /*
 Mines a list of id's for the best way to salvage them
 
+NOTE: Assumes that the salvageService was inited
 @param list of ids
 */
 function mine(item_ids) {
   var promises = [];
   promises.push(api_utils.getItemsPromise(item_ids));
   promises.push(api_utils.getTPPrices(item_ids));
-  promises.push(salvage.SalvageService.init()); // Just make sure that the salvage service also fetched its data
 
   return Promise.all(promises).then(function (arr) {
     let item_promise = arr[0];

@@ -36939,13 +36939,13 @@ module.exports = {
 /*
 Mines a list of id's for the best way to salvage them
 
+NOTE: Assumes that the salvageService was inited
 @param list of ids
 */
 function mine(item_ids) {
   var promises = [];
   promises.push(api_utils.getItemsPromise(item_ids));
   promises.push(api_utils.getTPPrices(item_ids));
-  promises.push(salvage.SalvageService.init()); // Just make sure that the salvage service also fetched its data
 
   return Promise.all(promises).then(function (arr) {
     var item_promise = arr[0];
@@ -37633,6 +37633,7 @@ Handlebars.registerHelper("formatToken", function (token_cost, token_icon) {
 
 var miner = require('./miner');
 var DUNGEON_IDS = require('./dungeon_ids');
+var salvage = require('./salvage');
 
 $(document).ready(function () {
   // For the UI to work we first need icons for gold
@@ -37653,6 +37654,8 @@ $(document).ready(function () {
 
     console.log(icons);
   }));
+
+  first_order_promises.push(salvage.SalvageService.init());
 
   var _iteratorNormalCompletion = true;
   var _didIteratorError = false;
@@ -37885,4 +37888,4 @@ function namifyItems(items) {
   return items;
 }
 
-},{"./dungeon_ids":232,"./miner":233,"babelify/polyfill":4,"datatables":185,"handlebars":215,"jquery":216}]},{},[237]);
+},{"./dungeon_ids":232,"./miner":233,"./salvage":235,"babelify/polyfill":4,"datatables":185,"handlebars":215,"jquery":216}]},{},[237]);
