@@ -78,8 +78,6 @@ function assignConsumableTokenCost(item) {
   // 2) Slaying potions
   // 3) Transform tonics
 
-  console.log(item);
-
   if ("unlock_type" in item["details"] && item["details"]["unlock_type"].toLowerCase() == "craftingrecipe") {
     // Best heuristic to determine its a crafting recipe
     return TOKEN_COSTS.RECIPE_COST;
@@ -137,6 +135,7 @@ Classifies items based on their possible profit potential
 */
 function classifyItems(items_array) {
   for (let item of items_array) {
+    console.log(item["name"] + " " + item["id"]);
     // We can now determine if it is sellable on the TP, salvagable or sellable
     // to a vendor.
 

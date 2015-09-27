@@ -198,7 +198,7 @@ var SalvageService = {
         break;
       case "ConditionDamage":
         switch (attrs[1]["attribute"]) {
-          case "Tougness":
+          case "Toughness":
             id = isWeapon ? DIRE_INSCRIPTION_ID : DIRE_INSIGNIA_ID;
             break;
           case "Precision":
@@ -224,7 +224,11 @@ var SalvageService = {
   },
 
   init: function () {
-    var promises = [this._createLightArmorSalvagePromise(), this._createMediumArmorSalvagePromise(), this._createHeavyArmorSalvagePromise(), this._createWeaponSalvagePromise(), this._createInsPromise()];
+    var promises = [this._createLightArmorSalvagePromise(),
+                    this._createMediumArmorSalvagePromise(),
+                    this._createHeavyArmorSalvagePromise(),
+                    this._createWeaponSalvagePromise(),
+                    this._createInsPromise()];
 
     return Promise.all(promises).then(function (arr) {
       this.initialised = true;

@@ -4,6 +4,25 @@ var Handlebars = require('handlebars');
 
 require("datatables");
 
+function errorFunc(error, human_error) {
+  var source = $("#error-template").html();
+  var template = Handlebars.compile(source);
+  var context = {
+    human_error: human_error ? human_error : 'Something broke horribly! Yell at your favorite windwarrior!',
+    dev_error: JSON.stringify(error),
+  }
+
+  var html = template(context);
+
+  $("#errors").append(html);
+}
+
+function chromeRedraw() {
+  // HACK: Apparantly chrome forgets to redraw sometimes
+  $('body').css('overflow', 'hidden').height();
+  $('body').css('overflow', 'auto');
+}
+
 Handlebars.registerHelper("formatGold", function(coin, icons) {
   coin = Math.round(coin);
   var gold   = Math.floor(coin / 10000) % 100;
@@ -46,8 +65,6 @@ $(document).ready(function () {
       let gold_icon_location = `https://render.guildwars2.com/file/${signature}/${file_id}.png`;
       icons[icon_name] = `<img class="icon-compact" src="${gold_icon_location}"/>`;
     }
-
-    console.log(icons);
   }));
 
   first_order_promises.push(salvage.SalvageService.init());
@@ -55,106 +72,112 @@ $(document).ready(function () {
   for (let dungeon of DUNGEON_IDS.dungeons) {
     let currency_promise = Promise.resolve($.ajax(`https://api.guildwars2.com/v2/currencies/${dungeon["currency_id"]}`)).then(function (result) {
       return $.extend(dungeon, result);
-    }).then(function (elem) {
-      console.log(elem);
-    });
-
-    let data_promise = miner.mine(dungeon["item_ids"]).then(function(items) {
-      return namifyItems(items);
-    }).then(function (items) {
-      dungeon["items"] = items;
+    }).catch(function (error) {
+      errorFunc(error, `Failed to load data for currency ${dungeon["name"]}`);
     });
 
     first_order_promises.push(currency_promise);
-    first_order_promises.push(data_promise);
   }
 
-
   Promise.all(first_order_promises).then(function (resArr) {
-    var listTemplateSource = $("#dungeon_item_table").html();
-    var listTemplate = Handlebars.compile(listTemplateSource);
-
-    let tabTemplateSource = $("#dungeon_tab_row").html();
-    let tabTemplate = Handlebars.compile(tabTemplateSource);
+    let second_order_promises = [];
 
     for (let dungeon of DUNGEON_IDS.dungeons) {
-      // now all dungeons are indeed complete
-      var listTemplateContext = {
-        token_icon: `<img class="icon-compact" src="${dungeon["icon"]}"/>`,
-        items: dungeon["items"],
-        icons: icons,
-        dungeon_symbolic_name: dungeon["dungeon_symbolic_name"],
-        dungeon_name: dungeon["dungeon_name"]
-      };
-
-      $("#dungeon_panels").append(listTemplate(listTemplateContext));
-
-      var tabTemplateContext = {
-        dungeon_symbolic_name: dungeon["dungeon_symbolic_name"],
-        dungeon_name: dungeon["dungeon_name"]
-      }
-
-      $("#dungeon_tabs").append(tabTemplate(tabTemplateContext));
-
-      // This has to be let, never change it to var, breaks stuff
-      let table = $(`#${dungeon["dungeon_symbolic_name"]}_table`).DataTable({
-        "paging":   false,
-        "order": [[ 4, "desc"]],
-        "searching": false,
-        "info": false,
+      let data_promise = miner.mine(dungeon["item_ids"]).then(function(items) {
+        return namifyItems(items);
+      }).then(function (items) {
+        dungeon["items"] = items;
+      }).catch(function (error) {
+        errorFunc(error, `Failed to load/process items for ${dungeon["name"]}`);
       });
-
-      //tables[dungeon["dungeon_name"]] = table;
-
-      $(`#${dungeon["dungeon_symbolic_name"]}_table`).on('click', 'tr.child-revealer', function () {
-        let row = table.row(this);
-
-        let item_id = $(this).data("item-id");
-        console.log(item_id);
-
-        let item = dungeon["items"].find(function (elem) {
-          return elem["id"] == item_id;
-        })
-
-        console.log(item);
-
-        if ( row.child.isShown() ) {
-            // This row is already open - close it
-            row.child.hide();
-        }
-        else {
-            // Open this row
-            row.child(createDetailedUI(item, icons)).show();
-
-            if ("salvage_sells" in item["values"]) {
-              $(`#${item_id}_salvage_table`).DataTable({
-                "paging":   false,
-                "order": [[ 4, "desc"]],
-                "searching": false,
-                "info": false,
-              });
-            }
-
-            console.log(`#${item_id}_${item.values.strategy}`);
-            $(`#${item_id}_panels`).removeClass("active");
-            $(`#${item_id}_${item.values.strategy}`).addClass("active");
-
-            $(`#${item_id}_tabs`).removeClass("active");
-            $(`#${item_id}_${item.values.strategy}_tab`).addClass("active");
-        }
-
-
-        // It sometimes does not draw, so force it
-        table.draw();
-
-        // HACK: Apparantly chrome forgets to redraw sometimes
-        $('body').each(function () {
-          var redraw = this.offsetHeight;
-        });
-      });
+      second_order_promises.push(data_promise);
     }
-  }).then(function () {
-    $("#dungeon_tabs a:first").tab('show');
+
+    return Promise.all(second_order_promises).then(function (resArr) {
+      var listTemplateSource = $("#dungeon_item_table").html();
+      var listTemplate = Handlebars.compile(listTemplateSource);
+
+      let tabTemplateSource = $("#dungeon_tab_row").html();
+      let tabTemplate = Handlebars.compile(tabTemplateSource);
+
+      for (let dungeon of DUNGEON_IDS.dungeons) {
+        // now all dungeons are indeed complete
+        var listTemplateContext = {
+          token_icon: `<img class="icon-compact" src="${dungeon["icon"]}"/>`,
+          items: dungeon["items"],
+          icons: icons,
+          dungeon_symbolic_name: dungeon["dungeon_symbolic_name"],
+          dungeon_name: dungeon["dungeon_name"],
+        };
+
+        $("#dungeon_panels").append(listTemplate(listTemplateContext));
+
+        var tabTemplateContext = {
+          dungeon_symbolic_name: dungeon["dungeon_symbolic_name"],
+          dungeon_name: dungeon["dungeon_name"],
+          dungeon_short: dungeon["dungeon_short"],
+        }
+
+        $("#dungeon_tabs").append(tabTemplate(tabTemplateContext));
+
+        // This has to be let, never change it to var, breaks stuff
+        let table = $(`#${dungeon["dungeon_symbolic_name"]}_table`).DataTable({
+          "paging":   false,
+          "order": [[ 4, "desc"]],
+          "searching": false,
+          "info": false,
+        });
+
+        //tables[dungeon["dungeon_name"]] = table;
+
+        $(`#${dungeon["dungeon_symbolic_name"]}_table`).on('click', 'tr.child-revealer', function () {
+          let row = table.row(this);
+
+          let item_id = $(this).data("item-id");
+
+          let item = dungeon["items"].find(function (elem) {
+            return elem["id"] == item_id;
+          })
+
+          if ( row.child.isShown() ) {
+              // This row is already open - close it
+              row.child.hide();
+          }
+          else {
+              // Open this row
+              row.child(createDetailedUI(item, icons)).show();
+
+              if ("salvage_sells" in item["values"]) {
+                $(`#${item_id}_salvage_table`).DataTable({
+                  "paging":   false,
+                  "order": [[ 4, "desc"]],
+                  "searching": false,
+                  "info": false,
+                });
+              }
+
+              $(`#${item_id}_panels`).removeClass("active");
+              $(`#${item_id}_${item.values.strategy}`).addClass("active");
+
+              $(`#${item_id}_tabs`).removeClass("active");
+              $(`#${item_id}_${item.values.strategy}_tab`).addClass("active");
+          }
+
+
+          // It sometimes does not draw, so force it
+          table.draw();
+
+          chromeRedraw();
+        });
+      }
+    }).then(function () {
+      $("#dungeon_tabs a:first").tab('show');
+    }).catch(function (error) {
+      errorFunc(error, `Something broke horribly!`);
+    }).then(function (elem) {
+      $("#loading-spinner").hide();
+    });
+
   });
 })
 

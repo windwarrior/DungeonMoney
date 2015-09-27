@@ -29,12 +29,74 @@
       border-top: 2px solid #ddd !important;
       font-weight: bold;
     }
+
+    #loading-spinner {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      font-size: 50px;
+      height: 100px;
+      width: 100px;
+      margin-left: -50px;
+      margin-top: -50px;
+      text-align: center;
+      background-color: rgba(0,0,0,0.8);
+      color: #fff;
+      border-radius: 5px;
+    }
+
+    #loading-spinner span {
+      margin: 0;
+
+      -webkit-animation: wiggle 1s 16 ease;
+      -moz-animation: wiggle 1s 16 ease;
+      -o-animation: wiggle 1s 16 ease;
+      animation: wiggle 1s 16 ease;
+
+      line-height: 100px;
+    }
+
+    @-webkit-keyframes wiggle {
+      from {
+        -webkit-transform: rotate(0deg);
+      }
+      to {
+        -webkit-transform: rotate(360deg);
+      }
+    }
+
+    @-moz-keyframes wiggle {
+      from {
+        -moz-transform: rotate(0deg);
+      }
+      to {
+        -moz-transform: rotate(360deg);
+      }
+    }
+
+    @-o-keyframes wiggle {
+      from {
+        -o-transform: rotate(0deg);
+      }
+      to {
+        -o-transform: rotate(360deg);
+      }
+    }
+
+    @keyframes wiggle {
+      from {
+        transform: rotate(0deg);
+      }
+      to {
+        transform: rotate(360deg);
+      }
+    }
   </style>
 </head>
 <body>
   <div class="container">
     <div class="row">
-      <div class="col-xs-12" id="errors">
+      <div class="col-xs-12" id="info">
         <h1> GW2 Dungeon tokens to money </h1>
         <p>
           Use this tool to determine the best value of your dungeon tokens!
@@ -43,6 +105,9 @@
           press the table headings to sort, as well as press the items to show
           more information on how the value of that item was calculated.
         </p>
+      </div>
+
+      <div class="col-xs-12" id="errors">
       </div>
       <div class="col-xs-12" id="item_table">
         <ul class="nav nav-tabs" role="tablist" id="dungeon_tabs">
@@ -54,18 +119,22 @@
       </div>
     </div>
   </div>
+
+  <div id="loading-spinner">
+    <span class="glyphicon glyphicon-repeat"></span>
+  </div>
+
   <!-- javascript things -->
   <script type="text/javascript" src="bundle.js"></script>
 
   <!-- Bootstrap, yes really, but only for the nice theme it has -->
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
 
   <script id="dungeon_tab_row" type="text/x-handlebars-template">
     <li role="presentation">
       <a href="#{{ dungeon_symbolic_name }}" aria-controls="{{ dungeon_symbolic_name }}" role="tab" data-toggle="tab">
-        {{ dungeon_name }}
+        <span title="{{dungeon_name}}">{{ dungeon_short }}</span>
       </a>
     </li>
   </script>
@@ -77,10 +146,11 @@
         <tr>
           <th>Icon</th>
           <th width="100%">Name</th>
-          <td> Item ID </th>
           <th>Cost in tokens</th>
           <th>Total value</th>
           <th>Value per token</th>
+
+          <td> Item ID </th>
         </tr>
       </thead>
       <tbody>
@@ -88,10 +158,11 @@
           <tr data-item-id={{id}} class="child-revealer">
             <td><img src="{{icon}}"/></td>
             <td width="100%">{{full_name}}</td>
-            <td> {{id}} </th>
             <td data-order={{token_cost}}>{{formatToken token_cost ../token_icon}}</td>
             <td data-order={{values.strategy_profit}}>{{formatGold values.strategy_profit ../icons}}</td>
             <td data-order={{values.strategy_profit_per_token}}>{{formatGold values.strategy_profit_per_token ../icons}}</td>
+
+            <td> {{id}} </th>
           </tr>
         {{/each}}
       </tbody>
@@ -212,6 +283,15 @@
       </div>
 
 
+    </div>
+  </script>
+
+  <script id="error-template" type="text/x-handlebars-template">
+    <div class="alert alert-danger" role="alert">
+      <details>
+        <summary><strong> Error: </strong> {{ human_error }}. (open for detailed error)</summary>
+        <p>{{ dev_error }}</p>
+      </details>
     </div>
   </script>
 </body>

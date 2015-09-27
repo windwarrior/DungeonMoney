@@ -36857,6 +36857,7 @@ var range = require('./range');
 module.exports = {
   dungeons: [{
     dungeon_name: "Caudecus's Manor",
+    dungeon_short: "CM",
     dungeon_symbolic_name: "cadecus_manor",
     currency_id: 9,
     item_ids: [8881, // Powerful Potion of Outlaw Slaying
@@ -36865,6 +36866,7 @@ module.exports = {
   }, // heavy exotic armor pieces
   {
     dungeon_name: "Ascalonian Catacombs",
+    dungeon_short: "AC",
     dungeon_symbolic_name: "ascalonian_catacombs",
     currency_id: 5,
     item_ids: [8896, // Ghostly Tonic
@@ -36872,19 +36874,57 @@ module.exports = {
   }, // heavy exotic armor
   {
     dungeon_name: "Twilight Arbor",
+    dungeon_short: "TA",
     dungeon_symbolic_name: "twilight_arbor",
-    currency_id: 5,
+    currency_id: 11,
     item_ids: [8882, // Powerful Potion of Nightmare Court Slaying
     8899, // Overgrown Tonic
     10257].concat(_toConsumableArray(range.range(24846, 24849)), _toConsumableArray(range.range(24679, 24682)), _toConsumableArray(range.range(17372, 17390)), _toConsumableArray(range.range(18576, 18612)), _toConsumableArray(range.range(17353, 17372)), _toConsumableArray(range.range(18538, 18576)))
   }, // weapons (magi/rabid)
   {
     dungeon_name: "Sorrow's Embrace",
+    dungeon_short: "SE",
     dungeon_symbolic_name: "sorrows_embrace",
-    currency_id: 5,
+    currency_id: 10,
     item_ids: [8892, // Powerful Potion of Dredge Slaying
     8898, // Tonic of the Moletariate
     10256].concat(_toConsumableArray(range.range(24849, 24852)), _toConsumableArray(range.range(24682, 24685)), _toConsumableArray(range.range(17409, 17426)), _toConsumableArray(range.range(18724, 18760)), _toConsumableArray(range.range(17390, 17409)), _toConsumableArray(range.range(18686, 18724)))
+  }, //exotic weapon (knights/soldiers)
+  {
+    dungeon_name: "Citadel of Flame",
+    dungeon_short: "CoF",
+    dungeon_symbolic_name: "citadel_of_flame",
+    currency_id: 13,
+    item_ids: [8879, // Powerful Potion of Flame Legion Slaying
+    8900, // Fiery Tonic
+    10258].concat(_toConsumableArray(range.range(24852, 24855)), _toConsumableArray(range.range(24673, 24676)), _toConsumableArray(range.range(17335, 17353)), _toConsumableArray(range.range(18428, 18464)), _toConsumableArray(range.range(17316, 17335)), _toConsumableArray(range.range(18390, 18428)))
+  }, //exotic weapon (carrion/rampager)
+  {
+    dungeon_name: "Honor of the Waves",
+    dungeon_short: "HotW",
+    dungeon_symbolic_name: "honor_of_the_waves",
+    currency_id: 12,
+    item_ids: [8883, // Powerful Potion of Sons of Svanir Slaying
+    8902, // Ursan Tonic
+    10260].concat(_toConsumableArray(range.range(24855, 24858)), _toConsumableArray(range.range(24669, 24672)), _toConsumableArray(range.range(18114, 18168)), _toConsumableArray(range.range(18057, 18114)))
+  }, //exotic weapon (all stats)
+  {
+    dungeon_name: "Crucible of Eternity",
+    dungeon_short: "CoE",
+    dungeon_symbolic_name: "crucible_of_eternity",
+    currency_id: 14,
+    item_ids: [8887, // Powerful Potion of Inquest Slaying
+    8903, // Sinister Automatonic
+    10261].concat(_toConsumableArray(range.range(24783, 24786)), _toConsumableArray(range.range(24670, 24673)), _toConsumableArray(range.range(17744, 17756)), _toConsumableArray(range.range(17762, 17774)), _toConsumableArray(range.range(17780, 17792)), _toConsumableArray(range.range(46417, 46435)), _toConsumableArray(range.range(17687, 17725)), _toConsumableArray(range.range(46398, 46417)))
+  }, //exotic weapon (dire)
+  {
+    dungeon_name: "Ruined City of Arah",
+    dungeon_short: "Arah",
+    dungeon_symbolic_name: "ruined_city_of_arah",
+    currency_id: 6,
+    item_ids: [8893, // Powerful Potion of Undead Slaying
+    8901, // Phantasmal Tonic
+    10259].concat(_toConsumableArray(range.range(24858, 24861)), _toConsumableArray(range.range(24640, 24643)), _toConsumableArray(range.range(17929, 17983)), _toConsumableArray(range.range(17872, 17929)))
   }]
 };
 // Recipe: Extended Potion of Outlaw Slaying
@@ -36911,7 +36951,33 @@ module.exports = {
 // exotic armor (Carrion)
 // exotic armor (knights/soldiers)
 //exotic weapon (carrion)
-//exotic weapon (knights/soldiers)
+// Recipe: Extended Potion of Flame Legion Slaying
+// Rune of the Baelfire
+// Sigil of Smothering
+// exotic armor (Berserker)
+// exotic armor (carrior/rampager)
+// exotic weapon (berserker)
+// Recipe: Extended Potion of Sons of Svanir Slaying
+// Rune of Sanctuary
+// Sigil of Wrath
+// exotic armor (all stats)
+// Recipe: Extended Potion of Inquest Slaying
+// Rune of the Golemancer
+// Sigil of Mad Scientists
+
+// HACK This dungeon is totally weird in how the items are set up o.O
+// exotic armor
+// exotic armor
+// exotic armor
+// exotic armor
+
+//exotic weapon
+// Recipe: Extended Potion of Undead Slaying
+// Rune of Orr
+// Sigil of Mad Scientists
+
+//exotic armor
+//exotic weapon
 
 },{"./range":234}],233:[function(require,module,exports){
 'use strict';
@@ -37017,8 +37083,6 @@ function assignConsumableTokenCost(item) {
   // 2) Slaying potions
   // 3) Transform tonics
 
-  console.log(item);
-
   if ("unlock_type" in item["details"] && item["details"]["unlock_type"].toLowerCase() == "craftingrecipe") {
     // Best heuristic to determine its a crafting recipe
     return TOKEN_COSTS.RECIPE_COST;
@@ -37082,6 +37146,7 @@ function classifyItems(items_array) {
     for (var _iterator2 = items_array[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
       var item = _step2.value;
 
+      console.log(item["name"] + " " + item["id"]);
       // We can now determine if it is sellable on the TP, salvagable or sellable
       // to a vendor.
 
@@ -37471,7 +37536,7 @@ var SalvageService = {
         break;
       case "ConditionDamage":
         switch (attrs[1]["attribute"]) {
-          case "Tougness":
+          case "Toughness":
             id = isWeapon ? DIRE_INSCRIPTION_ID : DIRE_INSIGNIA_ID;
             break;
           case "Precision":
@@ -37606,6 +37671,25 @@ var Handlebars = require('handlebars');
 
 require("datatables");
 
+function errorFunc(error, human_error) {
+  var source = $("#error-template").html();
+  var template = Handlebars.compile(source);
+  var context = {
+    human_error: human_error ? human_error : 'Something broke horribly! Yell at your favorite windwarrior!',
+    dev_error: JSON.stringify(error)
+  };
+
+  var html = template(context);
+
+  $("#errors").append(html);
+}
+
+function chromeRedraw() {
+  // HACK: Apparantly chrome forgets to redraw sometimes
+  $('body').css('overflow', 'hidden').height();
+  $('body').css('overflow', 'auto');
+}
+
 Handlebars.registerHelper("formatGold", function (coin, icons) {
   coin = Math.round(coin);
   var gold = Math.floor(coin / 10000) % 100;
@@ -37651,8 +37735,6 @@ $(document).ready(function () {
       var gold_icon_location = 'https://render.guildwars2.com/file/' + signature + '/' + file_id + '.png';
       icons[icon_name] = '<img class="icon-compact" src="' + gold_icon_location + '"/>';
     }
-
-    console.log(icons);
   }));
 
   first_order_promises.push(salvage.SalvageService.init());
@@ -37667,18 +37749,11 @@ $(document).ready(function () {
 
       var currency_promise = Promise.resolve($.ajax('https://api.guildwars2.com/v2/currencies/' + dungeon["currency_id"])).then(function (result) {
         return $.extend(dungeon, result);
-      }).then(function (elem) {
-        console.log(elem);
-      });
-
-      var data_promise = miner.mine(dungeon["item_ids"]).then(function (items) {
-        return namifyItems(items);
-      }).then(function (items) {
-        dungeon["items"] = items;
+      })['catch'](function (error) {
+        errorFunc(error, 'Failed to load data for currency ' + dungeon["name"]);
       });
 
       first_order_promises.push(currency_promise);
-      first_order_promises.push(data_promise);
     };
 
     for (var _iterator = DUNGEON_IDS.dungeons[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
@@ -37700,11 +37775,7 @@ $(document).ready(function () {
   }
 
   Promise.all(first_order_promises).then(function (resArr) {
-    var listTemplateSource = $("#dungeon_item_table").html();
-    var listTemplate = Handlebars.compile(listTemplateSource);
-
-    var tabTemplateSource = $("#dungeon_tab_row").html();
-    var tabTemplate = Handlebars.compile(tabTemplateSource);
+    var second_order_promises = [];
 
     var _iteratorNormalCompletion2 = true;
     var _didIteratorError2 = false;
@@ -37714,84 +37785,17 @@ $(document).ready(function () {
       var _loop2 = function () {
         var dungeon = _step2.value;
 
-        // now all dungeons are indeed complete
-        listTemplateContext = {
-          token_icon: '<img class="icon-compact" src="' + dungeon["icon"] + '"/>',
-          items: dungeon["items"],
-          icons: icons,
-          dungeon_symbolic_name: dungeon["dungeon_symbolic_name"],
-          dungeon_name: dungeon["dungeon_name"]
-        };
-
-        $("#dungeon_panels").append(listTemplate(listTemplateContext));
-
-        tabTemplateContext = {
-          dungeon_symbolic_name: dungeon["dungeon_symbolic_name"],
-          dungeon_name: dungeon["dungeon_name"]
-        };
-
-        $("#dungeon_tabs").append(tabTemplate(tabTemplateContext));
-
-        // This has to be let, never change it to var, breaks stuff
-        var table = $('#' + dungeon["dungeon_symbolic_name"] + '_table').DataTable({
-          "paging": false,
-          "order": [[4, "desc"]],
-          "searching": false,
-          "info": false
+        var data_promise = miner.mine(dungeon["item_ids"]).then(function (items) {
+          return namifyItems(items);
+        }).then(function (items) {
+          dungeon["items"] = items;
+        })['catch'](function (error) {
+          errorFunc(error, 'Failed to load/process items for ' + dungeon["name"]);
         });
-
-        //tables[dungeon["dungeon_name"]] = table;
-
-        $('#' + dungeon["dungeon_symbolic_name"] + '_table').on('click', 'tr.child-revealer', function () {
-          var row = table.row(this);
-
-          var item_id = $(this).data("item-id");
-          console.log(item_id);
-
-          var item = dungeon["items"].find(function (elem) {
-            return elem["id"] == item_id;
-          });
-
-          console.log(item);
-
-          if (row.child.isShown()) {
-            // This row is already open - close it
-            row.child.hide();
-          } else {
-            // Open this row
-            row.child(createDetailedUI(item, icons)).show();
-
-            if ("salvage_sells" in item["values"]) {
-              $('#' + item_id + '_salvage_table').DataTable({
-                "paging": false,
-                "order": [[4, "desc"]],
-                "searching": false,
-                "info": false
-              });
-            }
-
-            console.log('#' + item_id + '_' + item.values.strategy);
-            $('#' + item_id + '_panels').removeClass("active");
-            $('#' + item_id + '_' + item.values.strategy).addClass("active");
-
-            $('#' + item_id + '_tabs').removeClass("active");
-            $('#' + item_id + '_' + item.values.strategy + '_tab').addClass("active");
-          }
-
-          // It sometimes does not draw, so force it
-          table.draw();
-
-          // HACK: Apparantly chrome forgets to redraw sometimes
-          $('body').each(function () {
-            var redraw = this.offsetHeight;
-          });
-        });
+        second_order_promises.push(data_promise);
       };
 
       for (var _iterator2 = DUNGEON_IDS.dungeons[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
-        var listTemplateContext;
-        var tabTemplateContext;
-
         _loop2();
       }
     } catch (err) {
@@ -37808,8 +37812,117 @@ $(document).ready(function () {
         }
       }
     }
-  }).then(function () {
-    $("#dungeon_tabs a:first").tab('show');
+
+    return Promise.all(second_order_promises).then(function (resArr) {
+      var listTemplateSource = $("#dungeon_item_table").html();
+      var listTemplate = Handlebars.compile(listTemplateSource);
+
+      var tabTemplateSource = $("#dungeon_tab_row").html();
+      var tabTemplate = Handlebars.compile(tabTemplateSource);
+
+      var _iteratorNormalCompletion3 = true;
+      var _didIteratorError3 = false;
+      var _iteratorError3 = undefined;
+
+      try {
+        var _loop3 = function () {
+          var dungeon = _step3.value;
+
+          // now all dungeons are indeed complete
+          listTemplateContext = {
+            token_icon: '<img class="icon-compact" src="' + dungeon["icon"] + '"/>',
+            items: dungeon["items"],
+            icons: icons,
+            dungeon_symbolic_name: dungeon["dungeon_symbolic_name"],
+            dungeon_name: dungeon["dungeon_name"]
+          };
+
+          $("#dungeon_panels").append(listTemplate(listTemplateContext));
+
+          tabTemplateContext = {
+            dungeon_symbolic_name: dungeon["dungeon_symbolic_name"],
+            dungeon_name: dungeon["dungeon_name"],
+            dungeon_short: dungeon["dungeon_short"]
+          };
+
+          $("#dungeon_tabs").append(tabTemplate(tabTemplateContext));
+
+          // This has to be let, never change it to var, breaks stuff
+          var table = $('#' + dungeon["dungeon_symbolic_name"] + '_table').DataTable({
+            "paging": false,
+            "order": [[4, "desc"]],
+            "searching": false,
+            "info": false
+          });
+
+          //tables[dungeon["dungeon_name"]] = table;
+
+          $('#' + dungeon["dungeon_symbolic_name"] + '_table').on('click', 'tr.child-revealer', function () {
+            var row = table.row(this);
+
+            var item_id = $(this).data("item-id");
+
+            var item = dungeon["items"].find(function (elem) {
+              return elem["id"] == item_id;
+            });
+
+            if (row.child.isShown()) {
+              // This row is already open - close it
+              row.child.hide();
+            } else {
+              // Open this row
+              row.child(createDetailedUI(item, icons)).show();
+
+              if ("salvage_sells" in item["values"]) {
+                $('#' + item_id + '_salvage_table').DataTable({
+                  "paging": false,
+                  "order": [[4, "desc"]],
+                  "searching": false,
+                  "info": false
+                });
+              }
+
+              $('#' + item_id + '_panels').removeClass("active");
+              $('#' + item_id + '_' + item.values.strategy).addClass("active");
+
+              $('#' + item_id + '_tabs').removeClass("active");
+              $('#' + item_id + '_' + item.values.strategy + '_tab').addClass("active");
+            }
+
+            // It sometimes does not draw, so force it
+            table.draw();
+
+            chromeRedraw();
+          });
+        };
+
+        for (var _iterator3 = DUNGEON_IDS.dungeons[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+          var listTemplateContext;
+          var tabTemplateContext;
+
+          _loop3();
+        }
+      } catch (err) {
+        _didIteratorError3 = true;
+        _iteratorError3 = err;
+      } finally {
+        try {
+          if (!_iteratorNormalCompletion3 && _iterator3['return']) {
+            _iterator3['return']();
+          }
+        } finally {
+          if (_didIteratorError3) {
+            throw _iteratorError3;
+          }
+        }
+      }
+    }).then(function () {
+      $("#dungeon_tabs a:first").tab('show');
+    })['catch'](function (error) {
+      errorFunc(error, 'Something broke horribly!');
+    }).then(function (elem) {
+      $("#loading-spinner").hide();
+    });
   });
 });
 
@@ -37827,40 +37940,40 @@ function createDetailedUI(item, icons) {
 }
 
 function namifyItems(items) {
-  var _iteratorNormalCompletion3 = true;
-  var _didIteratorError3 = false;
-  var _iteratorError3 = undefined;
+  var _iteratorNormalCompletion4 = true;
+  var _didIteratorError4 = false;
+  var _iteratorError4 = undefined;
 
   try {
-    for (var _iterator3 = items[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
-      var item = _step3.value;
+    for (var _iterator4 = items[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
+      var item = _step4.value;
 
       if (item["type"].toLowerCase() == "armor" || item["type"].toLowerCase() == "weapon") {
         // Okay we want an array of all attributes (that should now be sorted!)
 
         var attributeArray = [];
 
-        var _iteratorNormalCompletion4 = true;
-        var _didIteratorError4 = false;
-        var _iteratorError4 = undefined;
+        var _iteratorNormalCompletion5 = true;
+        var _didIteratorError5 = false;
+        var _iteratorError5 = undefined;
 
         try {
-          for (var _iterator4 = item["details"]["infix_upgrade"]["attributes"][Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
-            var attr = _step4.value;
+          for (var _iterator5 = item["details"]["infix_upgrade"]["attributes"][Symbol.iterator](), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
+            var attr = _step5.value;
 
             attributeArray.push("+" + attr["attribute"].replace(/([a-z](?=[A-Z]))/g, '$1 '));
           }
         } catch (err) {
-          _didIteratorError4 = true;
-          _iteratorError4 = err;
+          _didIteratorError5 = true;
+          _iteratorError5 = err;
         } finally {
           try {
-            if (!_iteratorNormalCompletion4 && _iterator4['return']) {
-              _iterator4['return']();
+            if (!_iteratorNormalCompletion5 && _iterator5['return']) {
+              _iterator5['return']();
             }
           } finally {
-            if (_didIteratorError4) {
-              throw _iteratorError4;
+            if (_didIteratorError5) {
+              throw _iteratorError5;
             }
           }
         }
@@ -37871,16 +37984,16 @@ function namifyItems(items) {
       }
     }
   } catch (err) {
-    _didIteratorError3 = true;
-    _iteratorError3 = err;
+    _didIteratorError4 = true;
+    _iteratorError4 = err;
   } finally {
     try {
-      if (!_iteratorNormalCompletion3 && _iterator3['return']) {
-        _iterator3['return']();
+      if (!_iteratorNormalCompletion4 && _iterator4['return']) {
+        _iterator4['return']();
       }
     } finally {
-      if (_didIteratorError3) {
-        throw _iteratorError3;
+      if (_didIteratorError4) {
+        throw _iteratorError4;
       }
     }
   }
