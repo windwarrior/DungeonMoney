@@ -149,8 +149,6 @@
           <th>Cost in tokens</th>
           <th>Total value</th>
           <th>Value per token</th>
-
-          <td> Item ID </th>
         </tr>
       </thead>
       <tbody>
@@ -161,8 +159,6 @@
             <td data-order={{token_cost}}>{{formatToken token_cost ../token_icon}}</td>
             <td data-order={{values.strategy_profit}}>{{formatGold values.strategy_profit ../icons}}</td>
             <td data-order={{values.strategy_profit_per_token}}>{{formatGold values.strategy_profit_per_token ../icons}}</td>
-
-            <td> {{id}} </th>
           </tr>
         {{/each}}
       </tbody>

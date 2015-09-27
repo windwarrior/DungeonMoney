@@ -135,7 +135,6 @@ Classifies items based on their possible profit potential
 */
 function classifyItems(items_array) {
   for (let item of items_array) {
-    console.log(item["name"] + " " + item["id"]);
     // We can now determine if it is sellable on the TP, salvagable or sellable
     // to a vendor.
 
