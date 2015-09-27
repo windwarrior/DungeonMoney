@@ -21,6 +21,10 @@ function chromeRedraw() {
   // HACK: Apparantly chrome forgets to redraw sometimes
   $('body').css('overflow', 'hidden').height();
   $('body').css('overflow', 'auto');
+
+  $('body').each(function () {
+    var redraw = this.offsetHeight;
+  });
 }
 
 Handlebars.registerHelper("formatGold", function(coin, icons) {
