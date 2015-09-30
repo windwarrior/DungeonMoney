@@ -23,8 +23,8 @@ var RABID_INSCRIPTION_ID = 46686;
 var DIRE_INSCRIPTION_ID = 46690;
 var SHAMANS_INSCRIPTION_ID = 46684;
 
-var ECTO_RATE_BLSK = 1.25;
-var ECTO_RATE_MYSTIC = 0.875;
+var ECTO_RATE_EXOTIC_BLSK = 1.75;
+var ECTO_RATE_EXOTIC_MYSTIC = 1.25;
 
 var T5_RATE_BLSK = 2; // This is data pulled from my hat, its based on the 1,5 chance on getting silk/thick/mithril with mystic
 var T6_RATE_BLSK = 0.5;
@@ -38,8 +38,8 @@ var T6_WEAPON_RATE_MYSTIC = T6_RATE_MYSTIC / 2;
 var T5_WEAPON_RATE_BLSK = T5_RATE_BLSK / 2;
 var T6_WEAPON_RATE_BLSK = T6_RATE_BLSK / 2;
 
-var INS_RATE_BLSK = 0.5; // This is generally agreed upon
-var INS_RATE_MYSTIC = 0.4;
+var INS_RATE_BLSK = 0.62; // This is generally agreed upon
+var INS_RATE_MYSTIC = 0.42;
 
 var SalvageService = {
   // Remains false till we have downloaded some data from anet
@@ -86,9 +86,9 @@ var SalvageService = {
       case ECTOPLASM_ID:
         switch (kit) {
           case "blsk":
-            return ECTO_RATE_BLSK;
+            return ECTO_RATE_EXOTIC_BLSK;
           case "mystic":
-            return ECTO_RATE_MYSTIC;
+            return ECTO_RATE_EXOTIC_MYSTIC;
         }
         return  ECTO_RATE;
       case ELDER_WOOD_LOG_ID:
