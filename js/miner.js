@@ -178,8 +178,6 @@ function classifyItems(items_array) {
           item["values"][`salvage_sells_${kit}`] = item["values"][`salvage_sells_${kit}_pre_tax`] * TP_PROFIT_MARGIN;
           item["values"][`salvage_buys_${kit}`] = item["values"][`salvage_buys_${kit}_pre_tax`] * TP_PROFIT_MARGIN;
         }
-
-        console.log(item);
       }
     }
 
@@ -197,7 +195,6 @@ function classifyItems(items_array) {
         }
 
         if (item["values"][key] > best_val_only_buy && key.indexOf("sells") < 0) {
-          console.log(key + " yes");
           // Its not a sell listing and its better then the previous only buy
           best_val_only_buy = item["values"][key];
           best_key_only_buy = item["values"][key];
