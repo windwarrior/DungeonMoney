@@ -57,6 +57,10 @@ var DUNGEON_IDS = require('./dungeon_ids');
 var salvage = require('./salvage');
 
 $(document).ready(function () {
+
+  Handlebars.registerPartial('salvageListPartial',  $("#salvage_list_partial").html());
+
+
   // For the UI to work we first need icons for gold
   let first_order_promises = [];
   let icons = {};

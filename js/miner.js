@@ -141,12 +141,9 @@ function classifyItems(items_array) {
     // A dictionary that holds *our* values
     item["values"] = {};
 
-
     if (!("NoSell" in item["flags"])) {
       // It is sellable!
       item["values"]["sell"] = item["vendor_value"];
-    } else {
-      item["values"]["sell"] = 0;
     }
 
     if (!("AccountBound" in item["flags"]) && item["tp_value"]) {
@@ -156,7 +153,9 @@ function classifyItems(items_array) {
 
       item["values"]["tp_sells"] = item["tp_value"]["sells"] * TP_PROFIT_MARGIN;
       item["values"]["tp_buys"] = item["tp_value"]["buys"] * TP_PROFIT_MARGIN;
+
     }
+
 
     if (!("NoSalvage" in item["flags"]) &&
       (item["type"].toLowerCase() == "weapon" || item["type"].toLowerCase() == "armor")) {
@@ -164,33 +163,57 @@ function classifyItems(items_array) {
       // Lets first see where this product will salvage into
       item["salvages_to"] = salvage.SalvageService.getSalvageProduct(item);
 
-      // Then lets conclude on the value of the salvage
-      item["values"]["salvage_sells_pre_tax"] = 0;
-      item["values"]["salvage_buys_pre_tax"] = 0;
+      for (let kit in item["salvages_to"]) {
+        item["values"][`salvage_sells_${kit}_pre_tax`] = 0;
+        item["values"][`salvage_buys_${kit}_pre_tax`] = 0;
 
-      for (let subcomponent of item["salvages_to"]) {
-        item["values"]["salvage_sells_pre_tax"] += subcomponent["component_expected_value_sells"];
-        item["values"]["salvage_buys_pre_tax"] += subcomponent["component_expected_value_buys"];
+        for (let subcomponent of item["salvages_to"][kit]) {
+          subcomponent["expected_result"] = {};
+          subcomponent["expected_result"]["sells"] = subcomponent["salvage_rate"] * subcomponent["tp_value"]["sells"];
+          subcomponent["expected_result"]["buys"] = subcomponent["salvage_rate"] * subcomponent["tp_value"]["buys"];
+
+          item["values"][`salvage_sells_${kit}_pre_tax`] += subcomponent["expected_result"]["sells"];
+          item["values"][`salvage_buys_${kit}_pre_tax`] += subcomponent["expected_result"]["buys"];
+
+          item["values"][`salvage_sells_${kit}`] = item["values"][`salvage_sells_${kit}_pre_tax`] * TP_PROFIT_MARGIN;
+          item["values"][`salvage_buys_${kit}`] = item["values"][`salvage_buys_${kit}_pre_tax`] * TP_PROFIT_MARGIN;
+        }
+
+        console.log(item);
       }
-
-      item["values"]["salvage_sells"] = item["values"]["salvage_sells_pre_tax"] * TP_PROFIT_MARGIN;
-      item["values"]["salvage_buys"] = item["values"]["salvage_buys_pre_tax"] * TP_PROFIT_MARGIN;
     }
 
     let best_val = -1;
     let best_key = null;
 
-    for (let key of ["salvage_sells", "sell", "tp_sells"]) {
-      if (item["values"][key] && item["values"][key] > best_val) {
-        best_val = item["values"][key];
-        best_key = key;
+    let best_val_only_buy = -1;
+    let best_key_only_buy = null;
+
+    for (let key in item["values"]) {
+      if (key.indexOf("pre_tax") < 0 && item["values"][key]) {
+        if (item["values"][key] > best_val) {
+          best_val = item["values"][key];
+          best_key = key;
+        }
+
+        if (item["values"][key] > best_val_only_buy && key.indexOf("sells") < 0) {
+          console.log(key + " yes");
+          // Its not a sell listing and its better then the previous only buy
+          best_val_only_buy = item["values"][key];
+          best_key_only_buy = item["values"][key];
+        }
       }
+
     }
 
     item["values"]["strategy"] = best_key;
     item["values"]["strategy_profit"] = best_val;
 
+    item["values"]["strategy_only_buy"] = best_key_only_buy;
+    item["values"]["strategy_only_buy_profit"] = best_val_only_buy;
+
     item["values"]["strategy_profit_per_token"] = best_val / item["token_cost"];
+    item["values"]["strategy_only_buy_profit_per_token"] = best_val_only_buy / item["token_cost"];
   }
 
   return items_array;
